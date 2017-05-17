@@ -7,3 +7,5 @@
 *.bib.bak
 *.bib.sav
 /toadd
+/cache
+/figure
