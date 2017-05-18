@@ -2,7 +2,7 @@
 
 
 ```
-## Last Updated: 2017-05-17 16:30:52
+## Last Updated: 2017-05-18 08:56:50
 ```
 
 License: Public Domain (CC-0)
@@ -15,70 +15,61 @@ Here are some basic statistics on its contents:
 
 
 ```r
-library("RefManageR")
+library("bib2df")
 library("ggplot2")
-bib <- suppressWarnings(RefManageR::ReadBib("references.bib", check = FALSE))
-dat <- as.data.frame(bib)
-dat$year <- as.numeric(dat$year)
-```
-
-```
-## Warning: NAs introduced by coercion
-```
-
-```r
-dat$journal[is.na(dat$journal)] <- dat$journaltitle[is.na(dat$journal)]
+dat <- suppressWarnings(bib2df("references.bib"))
+dat$JOURNAL[is.na(dat$JOURNAL)] <- dat$JOURNALTITLE[is.na(dat$JOURNAL)]
 ```
 
 ## Citation Types
 
 
 ```r
-dat$bibtype <- factor(dat$bibtype, levels = names(sort(table(dat$bibtype))))
-ggplot(dat, aes(x = bibtype)) + geom_bar() + 
+dat$CATEGORY <- factor(dat$CATEGORY, levels = names(sort(table(dat$CATEGORY))))
+ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + geom_bar() + 
   xlab("Count") + ylab("Citation Type") + coord_flip()
 ```
 
-![plot of chunk bibtype](http://i.imgur.com/YxUNWi6.png)
+![plot of chunk bibtype](http://i.imgur.com/qYdiWZb.png)
 
 ## Journals
 
 
 ```r
-datj <- aggregate(bibtype ~ journal, data = dat, FUN = length)
-datj <- head(datj[order(datj$bibtype, decreasing = TRUE), ], 30)
-datj$journal <- factor(datj$journal, levels = rev(datj$journal))
-ggplot(datj, aes(x = journal, y = bibtype)) + geom_bar(stat = "identity") + 
+datj <- aggregate(CATEGORY ~ JOURNAL, data = dat, FUN = length)
+datj <- head(datj[order(datj$CATEGORY, decreasing = TRUE), ], 30)
+datj$JOURNAL <- factor(datj$JOURNAL, levels = rev(datj$JOURNAL))
+ggplot(datj, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity") + 
   ylab("Count") + xlab("Journal") + coord_flip()
 ```
 
-![plot of chunk journal](http://i.imgur.com/m8OlPdq.png)
+![plot of chunk journal](http://i.imgur.com/FQZED9P.png)
 
 ## Authors
 
 
 ```r
-aut <- unlist(lapply(unlist(lapply(bib, function(x) unclass(x$author)), recursive = FALSE), `[[`, "family"))
+aut <- unlist(dat$AUTHOR)
 aut <- as.data.frame(head(sort(table(aut), decreasing = TRUE), 50))
 aut$aut <- factor(aut$aut, levels = rev(aut$aut))
 ggplot(aut, aes(x = aut, y = Freq)) + geom_bar(stat = "identity") + 
   ylab("Count") + xlab("Author Surname") + coord_flip()
 ```
 
-![plot of chunk authors](http://i.imgur.com/vROL4Ww.png)
+![plot of chunk authors](http://i.imgur.com/xPgxjs1.png)
 
 ## Publication Years
 
 
 ```r
-ggplot(dat[dat$year > 1900, ], aes(x = year)) + geom_bar() +
+ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR)) + geom_bar() +
   xlab("Publication Year") + ylab("Count")
 ```
 
 ```
-## Warning: Removed 62 rows containing non-finite values (stat_count).
+## Warning: Removed 127 rows containing non-finite values (stat_count).
 ```
 
-![plot of chunk year](http://i.imgur.com/BjltrEc.png)
+![plot of chunk year](http://i.imgur.com/dVOaLB3.png)
 
 
