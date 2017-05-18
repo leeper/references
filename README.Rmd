@@ -20,7 +20,6 @@ Here are some basic statistics on its contents:
 library("bib2df")
 library("ggplot2")
 dat <- suppressWarnings(bib2df("references.bib"))
-dat$JOURNAL[is.na(dat$JOURNAL)] <- dat$JOURNALTITLE[is.na(dat$JOURNAL)]
 ```
 
 ## Citation Types
@@ -33,9 +32,10 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + geom_bar() +
 
 ## Journals
 
-```{r journal}
+```{r journal, fig.height = 8}
+dat$JOURNAL[is.na(dat$JOURNAL)] <- dat$JOURNALTITLE[is.na(dat$JOURNAL)]
 datj <- aggregate(CATEGORY ~ JOURNAL, data = dat, FUN = length)
-datj <- head(datj[order(datj$CATEGORY, decreasing = TRUE), ], 30)
+datj <- head(datj[order(datj$CATEGORY, decreasing = TRUE), ], 50)
 datj$JOURNAL <- factor(datj$JOURNAL, levels = rev(datj$JOURNAL))
 ggplot(datj, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity") + 
   ylab("Count") + xlab("Journal") + coord_flip()
@@ -45,9 +45,9 @@ ggplot(datj, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity") +
 
 ```{r authors, fig.height = 8}
 aut <- unlist(dat$AUTHOR)
-aut <- as.data.frame(head(sort(table(aut), decreasing = TRUE), 50))
-aut$aut <- factor(aut$aut, levels = rev(aut$aut))
-ggplot(aut, aes(x = aut, y = Freq)) + geom_bar(stat = "identity") + 
+topaut <- as.data.frame(head(sort(table(aut), decreasing = TRUE), 50))
+topaut$aut <- factor(topaut$aut, levels = rev(topaut$aut))
+ggplot(topaut, aes(x = aut, y = Freq)) + geom_bar(stat = "identity") + 
   ylab("Count") + xlab("Author Surname") + coord_flip()
 ```
 
