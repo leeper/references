@@ -2,7 +2,7 @@
 
 
 ```
-## Last Updated: 2017-05-21 14:52:53
+## Last Updated: 2017-05-21 15:29:30
 ```
 
 License: Public Domain (CC-0)
@@ -55,7 +55,7 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + geom_bar() +
   xlab("Count") + ylab("Citation Type") + coord_flip()
 ```
 
-![plot of chunk bibtype](http://i.imgur.com/BIH6h1k.png)
+![plot of chunk bibtype](http://i.imgur.com/4N4TAqE.png)
 
 ## Journals
 
@@ -69,7 +69,7 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity"
   ylab("Count") + xlab("Journal") + coord_flip()
 ```
 
-![plot of chunk journal](http://i.imgur.com/2JYnPgC.png)
+![plot of chunk journal](http://i.imgur.com/vwFCuou.png)
 
 ## Authors
 
@@ -82,21 +82,30 @@ ggplot(topaut, aes(x = aut, y = Freq)) + geom_bar(stat = "identity") +
   ylab("Count") + xlab("Author Name") + coord_flip()
 ```
 
-![plot of chunk authors](http://i.imgur.com/XzLBAwl.png)
+![plot of chunk authors](http://i.imgur.com/WQ6R4NC.png)
 
 ## Coauthorship
 
 
 ```r
-ggplot(, aes(x = lengths(dat$AUTHOR))) + geom_bar() +
-  xlab("Number of Co-Authors on Publication") + xlim(c(0,20)) + ylab("Count")
+dat$nauthors <- lengths(dat$AUTHOR)
+ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) + geom_point() + 
+  geom_smooth() + xlab("Publication Year") + ylab("Count")
 ```
 
 ```
-## Warning: Removed 1 rows containing non-finite values (stat_count).
+## `geom_smooth()` using method = 'gam'
 ```
 
-![plot of chunk nauthors](http://i.imgur.com/UvpXtqJ.png)
+```
+## Warning: Removed 127 rows containing non-finite values (stat_smooth).
+```
+
+```
+## Warning: Removed 127 rows containing missing values (geom_point).
+```
+
+![plot of chunk nauthors](http://i.imgur.com/lfUTHst.png)
 
 
 ```r
@@ -118,7 +127,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) + geom_bar(stat = "identity") +
   ylab("Network Betweenness") + xlab("Author Name") + coord_flip()
 ```
 
-![plot of chunk between](http://i.imgur.com/0c3n4Qh.png)
+![plot of chunk between](http://i.imgur.com/Hj8G3TP.png)
 
 ## Publication Years
 
@@ -132,6 +141,6 @@ ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR)) + geom_bar() +
 ## Warning: Removed 127 rows containing non-finite values (stat_count).
 ```
 
-![plot of chunk year](http://i.imgur.com/itdAYMm.png)
+![plot of chunk year](http://i.imgur.com/F87JpUz.png)
 
 

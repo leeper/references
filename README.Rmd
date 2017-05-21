@@ -56,8 +56,9 @@ ggplot(topaut, aes(x = aut, y = Freq)) + geom_bar(stat = "identity") +
 ## Coauthorship
 
 ```{r nauthors}
-ggplot(, aes(x = lengths(dat$AUTHOR))) + geom_bar() +
-  xlab("Number of Co-Authors on Publication") + xlim(c(0,20)) + ylab("Count")
+dat$nauthors <- lengths(dat$AUTHOR)
+ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) + geom_point() + 
+  geom_smooth() + xlab("Publication Year") + ylab("Count")
 ```
 
 ```{r authornetwork}
