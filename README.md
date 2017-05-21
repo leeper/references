@@ -2,7 +2,7 @@
 
 
 ```
-## Last Updated: 2017-05-21 15:29:30
+## Last Updated: 2017-05-21 21:55:12
 ```
 
 License: Public Domain (CC-0)
@@ -55,7 +55,7 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + geom_bar() +
   xlab("Count") + ylab("Citation Type") + coord_flip()
 ```
 
-![plot of chunk bibtype](http://i.imgur.com/4N4TAqE.png)
+![plot of chunk bibtype](http://i.imgur.com/4O0vo6B.png)
 
 ## Journals
 
@@ -69,7 +69,7 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity"
   ylab("Count") + xlab("Journal") + coord_flip()
 ```
 
-![plot of chunk journal](http://i.imgur.com/vwFCuou.png)
+![plot of chunk journal](http://i.imgur.com/5X9SO83.png)
 
 ## Authors
 
@@ -82,7 +82,7 @@ ggplot(topaut, aes(x = aut, y = Freq)) + geom_bar(stat = "identity") +
   ylab("Count") + xlab("Author Name") + coord_flip()
 ```
 
-![plot of chunk authors](http://i.imgur.com/WQ6R4NC.png)
+![plot of chunk authors](http://i.imgur.com/3nAofZg.png)
 
 ## Coauthorship
 
@@ -98,14 +98,14 @@ ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) + geom_point() +
 ```
 
 ```
-## Warning: Removed 127 rows containing non-finite values (stat_smooth).
+## Warning: Removed 118 rows containing non-finite values (stat_smooth).
 ```
 
 ```
-## Warning: Removed 127 rows containing missing values (geom_point).
+## Warning: Removed 118 rows containing missing values (geom_point).
 ```
 
-![plot of chunk nauthors](http://i.imgur.com/lfUTHst.png)
+![plot of chunk nauthors](http://i.imgur.com/1STkC4Y.png)
 
 
 ```r
@@ -127,7 +127,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) + geom_bar(stat = "identity") +
   ylab("Network Betweenness") + xlab("Author Name") + coord_flip()
 ```
 
-![plot of chunk between](http://i.imgur.com/Hj8G3TP.png)
+![plot of chunk between](http://i.imgur.com/MW6vsin.png)
 
 ## Publication Years
 
@@ -138,9 +138,9 @@ ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR)) + geom_bar() +
 ```
 
 ```
-## Warning: Removed 127 rows containing non-finite values (stat_count).
+## Warning: Removed 118 rows containing non-finite values (stat_count).
 ```
 
-![plot of chunk year](http://i.imgur.com/F87JpUz.png)
+![plot of chunk year](http://i.imgur.com/ijUG6nd.png)
 
 
