@@ -1,8 +1,10 @@
-# My BibTeX database
-
-```{r timestamp, echo = FALSE}
-message(sprintf("Last Updated: %s", Sys.time()))
-```
+---
+title: "My BibTeX database"
+author: "Thomas J. Leeper"
+output:
+  md_document:
+    variant: markdown_github
+---
 
 License: Public Domain (CC-0)
 
@@ -17,11 +19,12 @@ opts_chunk$set(fig.width=8, fig.height=5)
 Here are some basic statistics on its contents:
 
 ```{r data}
-library("bib2df")
+requireNamespace("bib2df")
+requireNamespace("igraph")
 library("ggplot2")
-library("igraph")
+library("ggraph")
 theme_set(theme_minimal())
-dat <- suppressWarnings(bib2df("references.bib"))
+dat <- suppressWarnings(bib2df::bib2df("references.bib"))
 ```
 
 ## Citation Types
@@ -47,9 +50,9 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity"
 
 ```{r authors, fig.height = 8}
 aut <- unlist(dat$AUTHOR)
-topaut <- as.data.frame(head(sort(table(aut), decreasing = TRUE), 50))
+topaut <- as.data.frame(head(sort(table(aut), decreasing = TRUE), 100))
 topaut$aut <- factor(topaut$aut, levels = rev(topaut$aut))
-ggplot(topaut, aes(x = aut, y = Freq)) + geom_bar(stat = "identity") + 
+ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + geom_bar(stat = "identity") + 
   ylab("Count") + xlab("Author Name") + coord_flip()
 ```
 
@@ -61,18 +64,22 @@ ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) + geom_point() +
   geom_smooth() + xlab("Publication Year") + ylab("Count")
 ```
 
-```{r authornetwork}
+```{r authornetwork, fig.height = 8}
 # get all coauthor pairs
 colist <- lapply(dat$AUTHOR, function(x) if (length(x) >= 2) combn(x, m = 2) else NA_character_)
 # convert networks of top coauthors to igraph object
 codat <- na.omit(data.frame(t(do.call("cbind", colist))))
 codat$N <- 1L
-topco <- aggregate(N ~ X1 + X2, data = codat[codat$X1 %in% topaut$aut | codat$X1 %in% topaut$aut, ], FUN = sum)
+# make coauthor graph from top coauthors
+topco <- aggregate(N ~ X1 + X2, data = codat[codat$X1 %in% topaut$aut & codat$X2 %in% topaut$aut, ], FUN = sum)
 cograph <- igraph::graph_from_data_frame(topco, directed = FALSE)
+ggraph(cograph, "igraph", algorithm = "nicely") + 
+  geom_edge_link(aes(edge_width = N), colour = "gray") + 
+  geom_node_text(aes(label = name), fontface = 2, size = 3) + theme_void()
 ```
 
 ```{r between}
-between <- betweenness(cograph)
+between <- igraph::betweenness(cograph)
 topcoaut <- na.omit(data.frame(betweenness = head(sort(between, decreasing = TRUE), 30)))
 topcoaut$aut <- factor(rownames(topcoaut), levels = rev(rownames(topcoaut)))
 ggplot(topcoaut, aes(x = aut, y = betweenness)) + geom_bar(stat = "identity") + 
