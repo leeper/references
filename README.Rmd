@@ -19,8 +19,8 @@ opts_chunk$set(fig.width=8, fig.height=5)
 Here are some basic statistics on its contents:
 
 ```{r data}
-requireNamespace("bib2df")
-requireNamespace("igraph")
+requireNamespace("bib2df", quietly = TRUE)
+requireNamespace("igraph", quietly = TRUE)
 library("ggplot2")
 library("ggraph")
 theme_set(theme_minimal())
@@ -29,6 +29,8 @@ dat <- suppressWarnings(bib2df::bib2df("references.bib"))
 
 ## Citation Types
 
+Reference types in the database:
+
 ```{r bibtype}
 dat$CATEGORY <- factor(dat$CATEGORY, levels = names(sort(table(dat$CATEGORY))))
 ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + geom_bar() + 
@@ -36,6 +38,8 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + geom_bar() +
 ```
 
 ## Journals
+
+Most common 50 journals:
 
 ```{r journal, fig.height = 8}
 dat$JOURNAL[is.na(dat$JOURNAL)] <- dat$JOURNALTITLE[is.na(dat$JOURNAL)]
@@ -48,6 +52,8 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity"
 
 ## Authors
 
+Most common 50 authors:
+
 ```{r authors, fig.height = 8}
 aut <- unlist(dat$AUTHOR)
 topaut <- as.data.frame(head(sort(table(aut), decreasing = TRUE), 100))
@@ -56,13 +62,17 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + geom_bar(stat = "identity") +
   ylab("Count") + xlab("Author Name") + coord_flip()
 ```
 
-## Coauthorship
+Number of coauthors per publication:
 
 ```{r nauthors}
 dat$nauthors <- lengths(dat$AUTHOR)
 ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) + geom_point() + 
-  geom_smooth() + xlab("Publication Year") + ylab("Count")
+  geom_smooth() + xlab("Publication Year") + ylab("Coauthors per Publication")
 ```
+
+## Coauthorship
+
+Coauthorship network among most common 100 authors:
 
 ```{r authornetwork, fig.height = 8}
 # get all coauthor pairs
@@ -78,6 +88,8 @@ ggraph(cograph, "igraph", algorithm = "nicely") +
   geom_node_text(aes(label = name), fontface = 2, size = 3) + theme_void()
 ```
 
+Betweenness centrality of top 30 authors:
+
 ```{r between}
 between <- igraph::betweenness(cograph)
 topcoaut <- na.omit(data.frame(betweenness = head(sort(between, decreasing = TRUE), 30)))
@@ -87,6 +99,8 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) + geom_bar(stat = "identity") +
 ```
 
 ## Publication Years
+
+Years of publication (post-1900):
 
 ```{r year}
 ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR)) + geom_bar() +

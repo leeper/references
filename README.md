@@ -5,18 +5,8 @@ This is the bibtex (.bib) file containing all of my bibliographic references. Fi
 Here are some basic statistics on its contents:
 
 ``` r
-requireNamespace("bib2df")
-```
-
-    ## Loading required namespace: bib2df
-
-``` r
-requireNamespace("igraph")
-```
-
-    ## Loading required namespace: igraph
-
-``` r
+requireNamespace("bib2df", quietly = TRUE)
+requireNamespace("igraph", quietly = TRUE)
 library("ggplot2")
 library("ggraph")
 theme_set(theme_minimal())
@@ -26,16 +16,20 @@ dat <- suppressWarnings(bib2df::bib2df("references.bib"))
 Citation Types
 --------------
 
+Reference types in the database:
+
 ``` r
 dat$CATEGORY <- factor(dat$CATEGORY, levels = names(sort(table(dat$CATEGORY))))
 ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + geom_bar() + 
   xlab("Count") + ylab("Citation Type") + coord_flip()
 ```
 
-![](http://i.imgur.com/CSyFG8u.png)
+![](http://i.imgur.com/EFR5y0R.png)
 
 Journals
 --------
+
+Most common 50 journals:
 
 ``` r
 dat$JOURNAL[is.na(dat$JOURNAL)] <- dat$JOURNALTITLE[is.na(dat$JOURNAL)]
@@ -46,10 +40,12 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity"
   ylab("Count") + xlab("Journal") + coord_flip()
 ```
 
-![](http://i.imgur.com/LF6iktI.png)
+![](http://i.imgur.com/mBrdnB8.png)
 
 Authors
 -------
+
+Most common 50 authors:
 
 ``` r
 aut <- unlist(dat$AUTHOR)
@@ -59,24 +55,28 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + geom_bar(stat = "identity") +
   ylab("Count") + xlab("Author Name") + coord_flip()
 ```
 
-![](http://i.imgur.com/8UmsXL9.png)
+![](http://i.imgur.com/17idgH6.png)
 
-Coauthorship
-------------
+Number of coauthors per publication:
 
 ``` r
 dat$nauthors <- lengths(dat$AUTHOR)
 ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) + geom_point() + 
-  geom_smooth() + xlab("Publication Year") + ylab("Count")
+  geom_smooth() + xlab("Publication Year") + ylab("Coauthors per Publication")
 ```
 
     ## `geom_smooth()` using method = 'gam'
 
-    ## Warning: Removed 118 rows containing non-finite values (stat_smooth).
+    ## Warning: Removed 117 rows containing non-finite values (stat_smooth).
 
-    ## Warning: Removed 118 rows containing missing values (geom_point).
+    ## Warning: Removed 117 rows containing missing values (geom_point).
 
-![](http://i.imgur.com/ky4W7gx.png)
+![](http://i.imgur.com/KOshHec.png)
+
+Coauthorship
+------------
+
+Coauthorship network among most common 100 authors:
 
 ``` r
 # get all coauthor pairs
@@ -92,7 +92,9 @@ ggraph(cograph, "igraph", algorithm = "nicely") +
   geom_node_text(aes(label = name), fontface = 2, size = 3) + theme_void()
 ```
 
-![](http://i.imgur.com/OmLvKU6.png)
+![](http://i.imgur.com/fGCTsUX.png)
+
+Betweenness centrality of top 30 authors:
 
 ``` r
 between <- igraph::betweenness(cograph)
@@ -102,16 +104,18 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) + geom_bar(stat = "identity") +
   ylab("Network Betweenness") + xlab("Author Name") + coord_flip()
 ```
 
-![](http://i.imgur.com/GFmTUd9.png)
+![](http://i.imgur.com/hGNBWyh.png)
 
 Publication Years
 -----------------
+
+Years of publication (post-1900):
 
 ``` r
 ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR)) + geom_bar() +
   xlab("Publication Year") + ylab("Count")
 ```
 
-    ## Warning: Removed 118 rows containing non-finite values (stat_count).
+    ## Warning: Removed 117 rows containing non-finite values (stat_count).
 
-![](http://i.imgur.com/OONSd9q.png)
+![](http://i.imgur.com/ghlxoka.png)
