@@ -70,8 +70,8 @@ Number of coauthors per publication:
 
 ```{r nauthors}
 dat$nauthors <- lengths(dat$AUTHOR)
-ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) + geom_point() + 
-  geom_smooth() + xlab("Publication Year") + ylab("Coauthors per Publication")
+ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) + geom_point() + 
+  geom_smooth(method = "gam") + xlab("Publication Year") + ylab("Coauthors per Publication")
 ```
 
 
@@ -110,7 +110,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) + geom_bar(stat = "identity") +
 Years of publication (post-1900):
 
 ```{r year}
-ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR)) + geom_bar() +
+ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR)) + geom_bar() +
   xlab("Publication Year") + ylab("Count")
 ```
 

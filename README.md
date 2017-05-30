@@ -5,11 +5,15 @@ This is the bibtex (.bib) file containing all of my bibliographic references. Fi
 Here are some basic statistics on its contents:
 
 ``` r
+library("ggplot2")
 requireNamespace("bib2df", quietly = TRUE)
 requireNamespace("igraph", quietly = TRUE)
-library("ggplot2")
-library("ggraph")
+requireNamespace("gender", quietly = TRUE)
+requireNamespace("ggraph", quietly = TRUE)
 theme_set(theme_minimal())
+```
+
+``` r
 dat <- suppressWarnings(bib2df::bib2df("references.bib"))
 ```
 
@@ -24,7 +28,7 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + geom_bar() +
   xlab("Count") + ylab("Citation Type") + coord_flip()
 ```
 
-![](http://i.imgur.com/EFR5y0R.png)
+![](http://i.imgur.com/88q099l.png)
 
 Journals
 --------
@@ -40,7 +44,7 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity"
   ylab("Count") + xlab("Journal") + coord_flip()
 ```
 
-![](http://i.imgur.com/mBrdnB8.png)
+![](http://i.imgur.com/qQiJzHE.png)
 
 Authors
 -------
@@ -55,23 +59,17 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + geom_bar(stat = "identity") +
   ylab("Count") + xlab("Author Name") + coord_flip()
 ```
 
-![](http://i.imgur.com/17idgH6.png)
+![](http://i.imgur.com/gtL3xX8.png)
 
 Number of coauthors per publication:
 
 ``` r
 dat$nauthors <- lengths(dat$AUTHOR)
-ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) + geom_point() + 
-  geom_smooth() + xlab("Publication Year") + ylab("Coauthors per Publication")
+ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) + geom_point() + 
+  geom_smooth(method = "gam") + xlab("Publication Year") + ylab("Coauthors per Publication")
 ```
 
-    ## `geom_smooth()` using method = 'gam'
-
-    ## Warning: Removed 117 rows containing non-finite values (stat_smooth).
-
-    ## Warning: Removed 117 rows containing missing values (geom_point).
-
-![](http://i.imgur.com/KOshHec.png)
+![](http://i.imgur.com/Pfzi075.png)
 
 Coauthorship
 ------------
@@ -87,12 +85,13 @@ codat$N <- 1L
 # make coauthor graph from top coauthors
 topco <- aggregate(N ~ X1 + X2, data = codat[codat$X1 %in% topaut$aut & codat$X2 %in% topaut$aut, ], FUN = sum)
 cograph <- igraph::graph_from_data_frame(topco, directed = FALSE)
-ggraph(cograph, "igraph", algorithm = "nicely") + 
-  geom_edge_link(aes(edge_width = N), colour = "gray") + 
-  geom_node_text(aes(label = name), fontface = 2, size = 3) + theme_void()
+ggraph::ggraph(cograph, "igraph", algorithm = "nicely") + 
+  ggraph::geom_edge_link(aes(edge_width = N), colour = "gray") + 
+  ggraph::geom_node_text(aes(label = name), fontface = 2, size = 3) + 
+  theme_void()
 ```
 
-![](http://i.imgur.com/fGCTsUX.png)
+![](http://i.imgur.com/KRBLGIB.png)
 
 Betweenness centrality of top 30 authors:
 
@@ -104,7 +103,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) + geom_bar(stat = "identity") +
   ylab("Network Betweenness") + xlab("Author Name") + coord_flip()
 ```
 
-![](http://i.imgur.com/hGNBWyh.png)
+![](http://i.imgur.com/XjnOw9o.png)
 
 Publication Years
 -----------------
@@ -112,10 +111,8 @@ Publication Years
 Years of publication (post-1900):
 
 ``` r
-ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR)) + geom_bar() +
+ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR)) + geom_bar() +
   xlab("Publication Year") + ylab("Count")
 ```
 
-    ## Warning: Removed 117 rows containing non-finite values (stat_count).
-
-![](http://i.imgur.com/ghlxoka.png)
+![](http://i.imgur.com/8lxcOm9.png)
