@@ -18,12 +18,16 @@ opts_chunk$set(fig.width=8, fig.height=5)
 
 Here are some basic statistics on its contents:
 
-```{r data}
+```{r packages}
+library("ggplot2")
 requireNamespace("bib2df", quietly = TRUE)
 requireNamespace("igraph", quietly = TRUE)
-library("ggplot2")
-library("ggraph")
+requireNamespace("gender", quietly = TRUE)
+requireNamespace("ggraph", quietly = TRUE)
 theme_set(theme_minimal())
+```
+
+```{r data}
 dat <- suppressWarnings(bib2df::bib2df("references.bib"))
 ```
 
@@ -70,6 +74,8 @@ ggplot(dat[dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) + geom_point() +
   geom_smooth() + xlab("Publication Year") + ylab("Coauthors per Publication")
 ```
 
+
+
 ## Coauthorship
 
 Coauthorship network among most common 100 authors:
@@ -83,9 +89,10 @@ codat$N <- 1L
 # make coauthor graph from top coauthors
 topco <- aggregate(N ~ X1 + X2, data = codat[codat$X1 %in% topaut$aut & codat$X2 %in% topaut$aut, ], FUN = sum)
 cograph <- igraph::graph_from_data_frame(topco, directed = FALSE)
-ggraph(cograph, "igraph", algorithm = "nicely") + 
-  geom_edge_link(aes(edge_width = N), colour = "gray") + 
-  geom_node_text(aes(label = name), fontface = 2, size = 3) + theme_void()
+ggraph::ggraph(cograph, "igraph", algorithm = "nicely") + 
+  ggraph::geom_edge_link(aes(edge_width = N), colour = "gray") + 
+  ggraph::geom_node_text(aes(label = name), fontface = 2, size = 3) + 
+  theme_void()
 ```
 
 Betweenness centrality of top 30 authors:
