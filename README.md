@@ -28,7 +28,7 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + geom_bar() +
   xlab("Count") + ylab("Citation Type") + coord_flip()
 ```
 
-![](http://i.imgur.com/5R8J5Rc.png)
+![](http://i.imgur.com/JCAInjG.png)
 
 Journals
 --------
@@ -44,7 +44,7 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity"
   ylab("Count") + xlab("Journal") + coord_flip()
 ```
 
-![](http://i.imgur.com/aviH92p.png)
+![](http://i.imgur.com/R0DQ6W5.png)
 
 Authors
 -------
@@ -59,7 +59,7 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + geom_bar(stat = "identity") +
   ylab("Count") + xlab("Author Name") + coord_flip()
 ```
 
-![](http://i.imgur.com/SUzfMje.png)
+![](http://i.imgur.com/SK5JKAA.png)
 
 Number of coauthors per publication:
 
@@ -69,7 +69,7 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) +
   geom_smooth(method = "gam") + xlab("Publication Year") + ylab("Coauthors per Publication")
 ```
 
-![](http://i.imgur.com/Ttw3ZvE.png)
+![](http://i.imgur.com/F5wChzN.png)
 
 Coauthorship
 ------------
@@ -91,7 +91,7 @@ ggraph::ggraph(cograph, "igraph", algorithm = "nicely") +
   theme_void()
 ```
 
-![](http://i.imgur.com/UzOYQGW.png)
+![](http://i.imgur.com/06mD6JG.png)
 
 Betweenness centrality of top 30 authors:
 
@@ -103,7 +103,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) + geom_bar(stat = "identity") +
   ylab("Network Betweenness") + xlab("Author Name") + coord_flip()
 ```
 
-![](http://i.imgur.com/BPBygUK.png)
+![](http://i.imgur.com/bJy1juR.png)
 
 Publication Years
 -----------------
@@ -115,4 +115,4 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR)) + geom_bar() +
   xlab("Publication Year") + ylab("Count")
 ```
 
-![](http://i.imgur.com/1ScQsQp.png)
+![](http://i.imgur.com/PzC4cNT.png)
