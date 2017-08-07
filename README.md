@@ -28,7 +28,7 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + geom_bar() +
   xlab("Count") + ylab("Citation Type") + coord_flip()
 ```
 
-![](http://i.imgur.com/6iOCXoA.png)
+![](http://i.imgur.com/6A6ayim.png)
 
 Journals
 --------
@@ -44,7 +44,22 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity"
   ylab("Count") + xlab("Journal") + coord_flip()
 ```
 
-![](http://i.imgur.com/OvaWDPn.png)
+![](http://i.imgur.com/glOGSD8.png)
+
+Book Publishers
+---------------
+
+Most common 25 journals:
+
+``` r
+toppublishers <- aggregate(CATEGORY ~ PUBLISHER, data = dat[dat$CATEGORY == "BOOK",], FUN = length)
+toppublishers <- head(toppublishers[order(toppublishers$CATEGORY, decreasing = TRUE), ], 25)
+toppublishers$PUBLISHER <- factor(toppublishers$PUBLISHER, levels = rev(toppublishers$PUBLISHER))
+ggplot(toppublishers, aes(x = PUBLISHER, y = CATEGORY)) + geom_bar(stat = "identity") + 
+  ylab("Count") + xlab("Publisher") + coord_flip()
+```
+
+![](http://i.imgur.com/7c7BuP1.png)
 
 Authors
 -------
@@ -59,7 +74,7 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + geom_bar(stat = "identity") +
   ylab("Count") + xlab("Author Name") + coord_flip()
 ```
 
-![](http://i.imgur.com/hoDksYn.png)
+![](http://i.imgur.com/UWXuKmG.png)
 
 Number of coauthors per publication:
 
@@ -69,7 +84,7 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) +
   geom_smooth(method = "gam") + xlab("Publication Year") + ylab("Coauthors per Publication")
 ```
 
-![](http://i.imgur.com/sHL4rm9.png)
+![](http://i.imgur.com/zfmk0O6.png)
 
 Coauthorship
 ------------
@@ -91,7 +106,7 @@ ggraph::ggraph(cograph, "igraph", algorithm = "nicely") +
   theme_void()
 ```
 
-![](http://i.imgur.com/ol8pHjn.png)
+![](http://i.imgur.com/wK7o7Fj.png)
 
 Betweenness centrality of top 30 authors:
 
@@ -103,7 +118,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) + geom_bar(stat = "identity") +
   ylab("Network Betweenness") + xlab("Author Name") + coord_flip()
 ```
 
-![](http://i.imgur.com/os8qwjS.png)
+![](http://i.imgur.com/2f29PGb.png)
 
 Publication Years
 -----------------
@@ -115,4 +130,4 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR)) + geom_bar() +
   xlab("Publication Year") + ylab("Count")
 ```
 
-![](http://i.imgur.com/JfoizZk.png)
+![](http://i.imgur.com/qTqdm7w.png)
