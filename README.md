@@ -28,7 +28,7 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + geom_bar() +
   xlab("Count") + ylab("Citation Type") + coord_flip()
 ```
 
-![](http://i.imgur.com/6A6ayim.png)
+![](http://i.imgur.com/ayUDUMM.png)
 
 Journals
 --------
@@ -44,7 +44,7 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity"
   ylab("Count") + xlab("Journal") + coord_flip()
 ```
 
-![](http://i.imgur.com/glOGSD8.png)
+![](http://i.imgur.com/y8gvGVh.png)
 
 Book Publishers
 ---------------
@@ -59,7 +59,7 @@ ggplot(toppublishers, aes(x = PUBLISHER, y = CATEGORY)) + geom_bar(stat = "ident
   ylab("Count") + xlab("Publisher") + coord_flip()
 ```
 
-![](http://i.imgur.com/7c7BuP1.png)
+![](http://i.imgur.com/vYHtLg4.png)
 
 Authors
 -------
@@ -74,7 +74,7 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + geom_bar(stat = "identity") +
   ylab("Count") + xlab("Author Name") + coord_flip()
 ```
 
-![](http://i.imgur.com/UWXuKmG.png)
+![](http://i.imgur.com/bBvGlQk.png)
 
 Number of coauthors per publication:
 
@@ -84,7 +84,7 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) +
   geom_smooth(method = "gam") + xlab("Publication Year") + ylab("Coauthors per Publication")
 ```
 
-![](http://i.imgur.com/zfmk0O6.png)
+![](http://i.imgur.com/xRJHzgQ.png)
 
 Coauthorship
 ------------
@@ -106,7 +106,7 @@ ggraph::ggraph(cograph, "igraph", algorithm = "nicely") +
   theme_void()
 ```
 
-![](http://i.imgur.com/wK7o7Fj.png)
+![](http://i.imgur.com/K4TW8LY.png)
 
 Betweenness centrality of top 30 authors:
 
@@ -118,7 +118,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) + geom_bar(stat = "identity") +
   ylab("Network Betweenness") + xlab("Author Name") + coord_flip()
 ```
 
-![](http://i.imgur.com/2f29PGb.png)
+![](http://i.imgur.com/mYIAtnV.png)
 
 Publication Years
 -----------------
@@ -130,4 +130,4 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR)) + geom_bar() +
   xlab("Publication Year") + ylab("Count")
 ```
 
-![](http://i.imgur.com/qTqdm7w.png)
+![](http://i.imgur.com/dcVHsXF.png)
