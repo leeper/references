@@ -120,10 +120,10 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) + geom_bar(stat = "identity") +
 
 ## Publication Years
 
-Years of publication (post-1900):
+Years of publication (post-1950):
 
 ```{r year}
-ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR)) + geom_bar() +
+ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1950, ], aes(x = YEAR)) + geom_bar() +
   xlab("Publication Year") + ylab("Count")
 ```
 

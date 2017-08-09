@@ -28,7 +28,7 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + geom_bar() +
   xlab("Count") + ylab("Citation Type") + coord_flip()
 ```
 
-![](http://i.imgur.com/PiosESd.png)
+![](http://i.imgur.com/4r2UbBE.png)
 
 Journals
 --------
@@ -44,7 +44,7 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity"
   ylab("Count") + xlab("Journal") + coord_flip()
 ```
 
-![](http://i.imgur.com/GjhHDNv.png)
+![](http://i.imgur.com/EaYwJpl.png)
 
 Book Publishers
 ---------------
@@ -59,7 +59,7 @@ ggplot(toppublishers, aes(x = PUBLISHER, y = CATEGORY)) + geom_bar(stat = "ident
   ylab("Count") + xlab("Publisher") + coord_flip()
 ```
 
-![](http://i.imgur.com/DF12HBb.png)
+![](http://i.imgur.com/KKcuecv.png)
 
 Authors
 -------
@@ -74,7 +74,7 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + geom_bar(stat = "identity") +
   ylab("Count") + xlab("Author Name") + coord_flip()
 ```
 
-![](http://i.imgur.com/zWJdkn9.png)
+![](http://i.imgur.com/1OUH0t8.png)
 
 Number of coauthors per publication:
 
@@ -84,7 +84,7 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) +
   geom_smooth(method = "gam") + xlab("Publication Year") + ylab("Coauthors per Publication")
 ```
 
-![](http://i.imgur.com/zA80Dkl.png)
+![](http://i.imgur.com/0MSkred.png)
 
 Coauthorship
 ------------
@@ -106,7 +106,7 @@ ggraph::ggraph(cograph, "igraph", algorithm = "nicely") +
   theme_void()
 ```
 
-![](http://i.imgur.com/V0TpTy8.png)
+![](http://i.imgur.com/YZ0Zny3.png)
 
 Betweenness centrality of top 30 authors:
 
@@ -118,16 +118,16 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) + geom_bar(stat = "identity") +
   ylab("Network Betweenness") + xlab("Author Name") + coord_flip()
 ```
 
-![](http://i.imgur.com/8JVews6.png)
+![](http://i.imgur.com/PWkF0yC.png)
 
 Publication Years
 -----------------
 
-Years of publication (post-1900):
+Years of publication (post-1950):
 
 ``` r
-ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR)) + geom_bar() +
+ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1950, ], aes(x = YEAR)) + geom_bar() +
   xlab("Publication Year") + ylab("Count")
 ```
 
-![](http://i.imgur.com/sC4faEH.png)
+![](http://i.imgur.com/yZGGBf5.png)
