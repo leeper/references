@@ -28,7 +28,7 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + geom_bar() +
   xlab("Count") + ylab("Citation Type") + coord_flip()
 ```
 
-![](https://i.imgur.com/Fm1EoJB.png)
+![](https://i.imgur.com/dtROizs.png)
 
 Journals
 --------
@@ -44,7 +44,7 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity"
   ylab("Count") + xlab("Journal") + coord_flip()
 ```
 
-![](https://i.imgur.com/x7jX7YK.png)
+![](https://i.imgur.com/JU3tl8R.png)
 
 Book Publishers
 ---------------
@@ -59,7 +59,7 @@ ggplot(toppublishers, aes(x = PUBLISHER, y = CATEGORY)) + geom_bar(stat = "ident
   ylab("Count") + xlab("Publisher") + coord_flip()
 ```
 
-![](https://i.imgur.com/vh9xndU.png)
+![](https://i.imgur.com/iGBeidu.png)
 
 Authors
 -------
@@ -74,7 +74,7 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + geom_bar(stat = "identity") +
   ylab("Count") + xlab("Author Name") + coord_flip()
 ```
 
-![](https://i.imgur.com/52X1hlw.png)
+![](https://i.imgur.com/BUi3OmZ.png)
 
 Number of coauthors per publication:
 
@@ -84,7 +84,7 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) +
   geom_smooth(method = "gam") + xlab("Publication Year") + ylab("Coauthors per Publication")
 ```
 
-![](https://i.imgur.com/seOlT1x.png)
+![](https://i.imgur.com/LXSP92p.png)
 
 Coauthorship
 ------------
@@ -106,7 +106,7 @@ ggraph::ggraph(cograph, "igraph", algorithm = "nicely") +
   theme_void()
 ```
 
-![](https://i.imgur.com/4TiUhtX.png)
+![](https://i.imgur.com/FdGsLUE.png)
 
 Betweenness centrality of top 30 authors:
 
@@ -118,7 +118,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) + geom_bar(stat = "identity") +
   ylab("Network Betweenness") + xlab("Author Name") + coord_flip()
 ```
 
-![](https://i.imgur.com/A0zul81.png)
+![](https://i.imgur.com/wI5nuLu.png)
 
 Publication Years
 -----------------
@@ -130,4 +130,4 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1950, ], aes(x = YEAR)) + geom_bar() +
   xlab("Publication Year") + ylab("Count")
 ```
 
-![](https://i.imgur.com/tyvTpnQ.png)
+![](https://i.imgur.com/JjXvvbQ.png)
