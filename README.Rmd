@@ -103,8 +103,8 @@ codat$N <- 1L
 topco <- aggregate(N ~ X1 + X2, data = codat[codat$X1 %in% topaut$aut & codat$X2 %in% topaut$aut, ], FUN = sum)
 cograph <- igraph::graph_from_data_frame(topco, directed = FALSE)
 ggraph::ggraph(cograph, "igraph", algorithm = "nicely") + 
-  ggraph::geom_edge_link(aes(edge_width = N), colour = "gray") + 
-  ggraph::geom_node_text(aes(label = name), fontface = 2, size = 3) + 
+  ggraph::geom_edge_link(aes(edge_width = log(N)), colour = "gray") + 
+  ggraph::geom_node_text(aes(label = name), fontface = 1, size = 2) + 
   theme_void()
 ```
 

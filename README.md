@@ -17,6 +17,9 @@ theme_set(theme_minimal())
 dat <- suppressWarnings(bib2df::bib2df("references.bib"))
 ```
 
+    ## Column `YEAR` contains character strings.
+    ##               No coercion to numeric applied.
+
 Citation Types
 --------------
 
@@ -28,7 +31,7 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + geom_bar() +
   xlab("Count") + ylab("Citation Type") + coord_flip()
 ```
 
-![](https://i.imgur.com/8Cotwg6.png)
+![](https://i.imgur.com/UpmD0IM.png)
 
 Journals
 --------
@@ -44,7 +47,7 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity"
   ylab("Count") + xlab("Journal") + coord_flip()
 ```
 
-![](https://i.imgur.com/x5rEvDY.png)
+![](https://i.imgur.com/005NIZ7.png)
 
 Book Publishers
 ---------------
@@ -59,7 +62,7 @@ ggplot(toppublishers, aes(x = PUBLISHER, y = CATEGORY)) + geom_bar(stat = "ident
   ylab("Count") + xlab("Publisher") + coord_flip()
 ```
 
-![](https://i.imgur.com/5rylngU.png)
+![](https://i.imgur.com/0GArLUH.png)
 
 Authors
 -------
@@ -74,7 +77,7 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + geom_bar(stat = "identity") +
   ylab("Count") + xlab("Author Name") + coord_flip()
 ```
 
-![](https://i.imgur.com/unzPX4N.png)
+![](https://i.imgur.com/By83qTE.png)
 
 Number of coauthors per publication:
 
@@ -84,7 +87,7 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) +
   geom_smooth(method = "gam") + xlab("Publication Year") + ylab("Coauthors per Publication")
 ```
 
-![](https://i.imgur.com/PKE6mTs.png)
+![](https://i.imgur.com/cE8xSGL.png)
 
 Coauthorship
 ------------
@@ -101,12 +104,12 @@ codat$N <- 1L
 topco <- aggregate(N ~ X1 + X2, data = codat[codat$X1 %in% topaut$aut & codat$X2 %in% topaut$aut, ], FUN = sum)
 cograph <- igraph::graph_from_data_frame(topco, directed = FALSE)
 ggraph::ggraph(cograph, "igraph", algorithm = "nicely") + 
-  ggraph::geom_edge_link(aes(edge_width = N), colour = "gray") + 
-  ggraph::geom_node_text(aes(label = name), fontface = 2, size = 3) + 
+  ggraph::geom_edge_link(aes(edge_width = log(N)), colour = "gray") + 
+  ggraph::geom_node_text(aes(label = name), fontface = 1, size = 2) + 
   theme_void()
 ```
 
-![](https://i.imgur.com/2pYL4el.png)
+![](https://i.imgur.com/q5SkofY.png)
 
 Betweenness centrality of top 30 authors:
 
@@ -118,7 +121,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) + geom_bar(stat = "identity") +
   ylab("Network Betweenness") + xlab("Author Name") + coord_flip()
 ```
 
-![](https://i.imgur.com/r36EFmS.png)
+![](https://i.imgur.com/0NvUK5Y.png)
 
 Publication Years
 -----------------
@@ -130,4 +133,4 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1950, ], aes(x = YEAR)) + geom_bar() +
   xlab("Publication Year") + ylab("Count")
 ```
 
-![](https://i.imgur.com/wpvgEXw.png)
+![](https://i.imgur.com/HWp0hHX.png)
