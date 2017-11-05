@@ -6,17 +6,15 @@ output:
     variant: markdown_github
 ---
 
-License: Public Domain (CC-0)
-
-This is the bibtex (.bib) file containing all of my bibliographic references. Figured I'd share it publicly.
-
 ```{r setup, echo = FALSE, results="hide"}
 library("knitr")
 opts_knit$set(upload.fun = imgur_upload, base.url = NULL)
 opts_chunk$set(fig.width=8, fig.height=5)
 ````
 
-Here are some basic statistics on its contents:
+License: Public Domain (CC-0)
+
+This is the bibtex (.bib) file containing all of my bibliographic references. Figured I'd share it publicly.
 
 ```{r packages}
 library("ggplot2")
@@ -30,6 +28,9 @@ theme_set(theme_minimal())
 ```{r data}
 dat <- suppressWarnings(bib2df::bib2df("references.bib"))
 ```
+
+The database contains `r nrow(dat)` references. What follows are some basic statistics on its contents.
+
 
 ## Citation Types
 
