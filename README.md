@@ -18,7 +18,7 @@ dat <- suppressWarnings(bib2df::bib2df("references.bib"))
     ## Column `YEAR` contains character strings.
     ##               No coercion to numeric applied.
 
-The database contains 3971 references. What follows are some basic statistics on its contents.
+The database contains 3976 references. What follows are some basic statistics on its contents.
 
 Citation Types
 --------------
@@ -31,7 +31,7 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + geom_bar() +
   xlab("Count") + ylab("Citation Type") + coord_flip()
 ```
 
-![](https://i.imgur.com/0ticEsk.png)
+![](https://i.imgur.com/NC5kNFP.png)
 
 Journals
 --------
@@ -47,7 +47,7 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) + geom_bar(stat = "identity"
   ylab("Count") + xlab("Journal") + coord_flip()
 ```
 
-![](https://i.imgur.com/mG5HYOr.png)
+![](https://i.imgur.com/acDpbnB.png)
 
 Book Publishers
 ---------------
@@ -62,7 +62,7 @@ ggplot(toppublishers, aes(x = PUBLISHER, y = CATEGORY)) + geom_bar(stat = "ident
   ylab("Count") + xlab("Publisher") + coord_flip()
 ```
 
-![](https://i.imgur.com/p4skR6G.png)
+![](https://i.imgur.com/kiQ43eT.png)
 
 Authors
 -------
@@ -77,7 +77,7 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + geom_bar(stat = "identity") +
   ylab("Count") + xlab("Author Name") + coord_flip()
 ```
 
-![](https://i.imgur.com/WjxaYOD.png)
+![](https://i.imgur.com/2DUqinM.png)
 
 Number of coauthors per publication:
 
@@ -87,7 +87,7 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) +
   geom_smooth(method = "gam") + xlab("Publication Year") + ylab("Coauthors per Publication")
 ```
 
-![](https://i.imgur.com/sUjGunW.png)
+![](https://i.imgur.com/Q3FLAkl.png)
 
 Coauthorship
 ------------
@@ -109,7 +109,7 @@ ggraph::ggraph(cograph, "igraph", algorithm = "nicely") +
   theme_void()
 ```
 
-![](https://i.imgur.com/0dEfeu8.png)
+![](https://i.imgur.com/7rLSJlC.png)
 
 Betweenness centrality of top 30 authors:
 
@@ -121,7 +121,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) + geom_bar(stat = "identity") +
   ylab("Network Betweenness") + xlab("Author Name") + coord_flip()
 ```
 
-![](https://i.imgur.com/TUqnV2l.png)
+![](https://i.imgur.com/jEaDIju.png)
 
 Publication Years
 -----------------
@@ -133,4 +133,4 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1950, ], aes(x = YEAR)) + geom_bar() +
   xlab("Publication Year") + ylab("Count")
 ```
 
-![](https://i.imgur.com/iTl1UMr.png)
+![](https://i.imgur.com/ID89izQ.png)
