@@ -6,6 +6,7 @@
 *.docx
 *.bib.bak
 *.bib.sav
+*.zip
 toadd.bib
 /toadd
 /cache
