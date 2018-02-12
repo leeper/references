@@ -22,7 +22,7 @@ dat <- suppressWarnings(bib2df::bib2df("references.bib"))
 suppressWarnings(dat[["YEAR"]] <- as.numeric(dat[["YEAR"]]))
 ```
 
-The database contains 4086 references. What follows are some basic statistics on its contents.
+The database contains 4098 references. What follows are some basic statistics on its contents.
 
 Citation Types
 --------------
@@ -38,7 +38,7 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/ZhZKHak.png)
+![](https://i.imgur.com/7Qgt6Lp.png)
 
 Journals
 --------
@@ -57,7 +57,7 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/TAzmJUn.png)
+![](https://i.imgur.com/VN7WWxw.png)
 
 Book Publishers
 ---------------
@@ -75,7 +75,7 @@ ggplot(toppublishers, aes(x = PUBLISHER, y = CATEGORY)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/aTnqkBP.png)
+![](https://i.imgur.com/IcYrgYa.png)
 
 Authors
 -------
@@ -93,7 +93,7 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/F3Aod5h.png)
+![](https://i.imgur.com/xkrWvYJ.png)
 
 Number of coauthors per publication:
 
@@ -106,7 +106,7 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) +
   ylab("Coauthors per Publication")
 ```
 
-![](https://i.imgur.com/KGe1s5p.png)
+![](https://i.imgur.com/ZBJAtuM.png)
 
 Coauthorship
 ------------
@@ -128,7 +128,7 @@ ggraph::ggraph(cograph, "igraph", algorithm = "nicely") +
   theme_void()
 ```
 
-![](https://i.imgur.com/CDgVMxQ.png)
+![](https://i.imgur.com/IeG7PAn.png)
 
 Betweenness centrality of top 30 authors:
 
@@ -143,7 +143,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/vorkrbN.png)
+![](https://i.imgur.com/UVTD1tc.png)
 
 Publication Years
 -----------------
@@ -157,4 +157,4 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1950, ], aes(x = YEAR)) +
   ylab("Count")
 ```
 
-![](https://i.imgur.com/mxu47qe.png)
+![](https://i.imgur.com/YDFGLe8.png)
