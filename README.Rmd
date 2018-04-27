@@ -14,7 +14,7 @@ opts_chunk$set(fig.width=8, fig.height=5)
 
 License: Public Domain (CC-0)
 
-This is the bibtex (.bib) file containing all of my bibliographic references. Figured I'd share it publicly.
+This is the bibtex (.bib) file containing all of my bibliographic references. Figured I'd share it publicly. It was last updated on `R Sys.Date()`.
 
 ```{r packages}
 library("ggplot2")
@@ -148,6 +148,36 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1950, ], aes(x = YEAR)) +
   xlab("Publication Year") + 
   ylab("Count")
 ```
+
+## Data missingness
+
+Proportion missing data, by field, for articles:
+
+```{r missingness_articles}
+articles <- dat[dat$CATEGORY == "ARTICLE", c("AUTHOR", "TITLE", "JOURNAL", "YEAR", "VOLUME", "NUMBER", "PAGES", "ABSTRACT", "DOI")]
+articles <- cbind.data.frame(FIELD = names(articles), MISSINGNESS = unlist(lapply(articles, function(x) sum(is.na(x) == TRUE)/length(x))))
+ggplot(articles, aes(x = FIELD, y = MISSINGNESS)) +
+  geom_bar(stat = "identity") + 
+  ylab("Proportion Missing") + 
+  ylim(c(0,1)) +
+  xlab("") + 
+  coord_flip()
+```
+
+Proportion missing data, by field, for books:
+
+```{r missingness_books}
+books <- dat[dat$CATEGORY == "BOOK", c("AUTHOR", "EDITOR", "TITLE", "PUBLISHER", "YEAR", "ADDRESS", "ISBN")]
+books <- cbind.data.frame(FIELD = names(books), MISSINGNESS = unlist(lapply(books, function(x) sum(is.na(x) == TRUE)/length(x))))
+ggplot(books, aes(x = FIELD, y = MISSINGNESS)) +
+  geom_bar(stat = "identity") + 
+  ylab("Proportion Missing") + 
+  ylim(c(0,1)) +
+  xlab("") + 
+  coord_flip()
+```
+
+
 
 ```{r wrapup, echo = FALSE, results="hide"}
 unlink("cache", recursive = TRUE)
