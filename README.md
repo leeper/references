@@ -2,7 +2,7 @@ License: Public Domain (CC-0)
 
 This is the bibtex (.bib) file containing all of my bibliographic references. Figured I'd share it publicly.
 
-This README was last updated on 2018-06-04.
+This README was last updated on 2018-07-10.
 
 ``` r
 library("ggplot2")
@@ -24,7 +24,7 @@ dat <- suppressWarnings(bib2df::bib2df("references.bib"))
 suppressWarnings(dat[["YEAR"]] <- as.numeric(dat[["YEAR"]]))
 ```
 
-The database contains 4191 references. What follows are some basic statistics on its contents.
+The database contains 4198 references. What follows are some basic statistics on its contents.
 
 Citation Types
 --------------
@@ -40,7 +40,7 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/8k6aFMI.png)
+![](https://i.imgur.com/Eu4LX01.png)
 
 Journals
 --------
@@ -59,7 +59,7 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/v1XpsGW.png)
+![](https://i.imgur.com/w7zR1Um.png)
 
 Book Publishers
 ---------------
@@ -77,7 +77,7 @@ ggplot(toppublishers, aes(x = PUBLISHER, y = CATEGORY)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/gOrzAbg.png)
+![](https://i.imgur.com/URLM7R5.png)
 
 Authors
 -------
@@ -95,7 +95,7 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/G36K5Hn.png)
+![](https://i.imgur.com/SgSVsb6.png)
 
 Number of coauthors per publication:
 
@@ -108,7 +108,7 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) +
   ylab("Coauthors per Publication")
 ```
 
-![](https://i.imgur.com/MFkGgVb.png)
+![](https://i.imgur.com/TIMoM2F.png)
 
 Coauthorship
 ------------
@@ -130,7 +130,7 @@ ggraph::ggraph(cograph, "igraph", algorithm = "nicely") +
   theme_void()
 ```
 
-![](https://i.imgur.com/cxY2sTc.png)
+![](https://i.imgur.com/EdJ1mJc.png)
 
 Betweenness centrality of top 30 authors:
 
@@ -145,7 +145,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/vNz83jE.png)
+![](https://i.imgur.com/rImEawI.png)
 
 Publication Years
 -----------------
@@ -159,7 +159,7 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1950, ], aes(x = YEAR)) +
   ylab("Count")
 ```
 
-![](https://i.imgur.com/EKpBTXD.png)
+![](https://i.imgur.com/0jsP6rV.png)
 
 Data missingness
 ----------------
@@ -177,7 +177,7 @@ ggplot(articles, aes(x = FIELD, y = MISSINGNESS)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/7Kfn4Nb.png)
+![](https://i.imgur.com/jhbRozp.png)
 
 Proportion missing data, by field, for books:
 
@@ -192,4 +192,4 @@ ggplot(books, aes(x = FIELD, y = MISSINGNESS)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/u7RMtof.png)
+![](https://i.imgur.com/BBJ8eLa.png)
