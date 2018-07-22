@@ -7,14 +7,22 @@ output:
 ---
 
 ```{r setup, results="hide"}
+# knitr
 library("knitr")
+opts_chunk$set(fig.width=8, fig.height=5)
+
+# ggplot
 library("ggplot2")
+theme_set(theme_minimal())
+update_geom_defaults("bar", list(fill = "black"))
+update_geom_defaults("line", list(colour = "red"))
+update_geom_defaults("line", list(fill = "black", colour = "black"))
+
+# other packages
 requireNamespace("bib2df", quietly = TRUE)
 requireNamespace("igraph", quietly = TRUE)
 requireNamespace("gender", quietly = TRUE)
 requireNamespace("ggraph", quietly = TRUE)
-theme_set(theme_minimal())
-opts_chunk$set(fig.width=8, fig.height=5)
 ````
 
 License: Public Domain (CC-0)
@@ -64,7 +72,7 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) +
 
 Most common 25 journals:
 
-```{r publisher, fig.height = 8}
+```{r publisher, fig.height = 6}
 toppublishers <- aggregate(CATEGORY ~ PUBLISHER, data = dat[dat$CATEGORY == "BOOK",], FUN = length)
 toppublishers <- head(toppublishers[order(toppublishers$CATEGORY, decreasing = TRUE), ], 25)
 toppublishers$PUBLISHER <- factor(toppublishers$PUBLISHER, levels = rev(toppublishers$PUBLISHER))
@@ -78,13 +86,13 @@ ggplot(toppublishers, aes(x = PUBLISHER, y = CATEGORY)) +
 
 ## Authors
 
-Number of coauthors per publication:
+Number of coauthors per publication (excluding some recent extreme outliers):
 
 ```{r nauthors}
 dat$nauthors <- lengths(dat$AUTHOR)
-ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) + 
-  geom_point() + 
-  geom_smooth(method = "gam") + 
+ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900 & dat$nauthors < 40, ], aes(x = YEAR, y = nauthors)) + 
+  geom_point(alpha=0.1, fill="black", colour="black") + 
+  geom_smooth(method = "gam", colour = "red") + 
   xlab("Publication Year") + 
   ylab("Coauthors per Publication")
 ```
@@ -102,11 +110,32 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) +
   coord_flip()
 ```
 
+Gender of authors:
+
+```{r authorgender, fig.height=2}
+author_vec <- unique(as.character(unlist(dat$AUTHOR)))
+first_names <- regmatches(
+  author_vec,
+  regexec("(?<=, )[A-Za-z]+(?=[. ]{1})", author_vec, perl = TRUE)
+)
+g <- gender::gender(unlist(first_names))[, "gender", drop = FALSE]
+ggplot(g, aes(x = "", fill = gender)) +
+  geom_bar(aes(y = (..count..)/sum(..count..)), width = 1, position = "dodge") + 
+  scale_fill_manual(limits = c("male", "female"), values = c("gray", "black")) +
+  scale_y_continuous(breaks = seq(0,1,by=0.1), labels = scales::percent) +
+  coord_flip() +
+  xlab("") +
+  ylab("") +
+  theme(legend.position = "bottom")
+```
+
+Caveat: The above is based upon [the gender package](https://cran.r-project.org/package=gender), which classifies first names based upon historical data. This is not necessarily accurate and is restricted to a binary classification. It also uses all historical data provided in the package and is based only on United States data, making it possibly inaccurate for any given individual in the dataset.
+
 ## Coauthorship
 
 Coauthorship network among most common 150 authors:
 
-```{r authornetwork, fig.height=12}
+```{r authornetwork, fig.height=10}
 # get all coauthor pairs
 colist <- lapply(dat$AUTHOR, function(x) if (length(x) >= 2) combn(x, m = 2) else NA_character_)
 # convert networks of top coauthors to igraph object
@@ -116,17 +145,20 @@ codat$N <- 1L
 topco <- aggregate(N ~ X1 + X2, data = codat[codat$X1 %in% topaut$aut & codat$X2 %in% topaut$aut, ], FUN = sum)
 cograph <- igraph::graph_from_data_frame(topco, directed = FALSE)
 
-## d3
-#networkD3::simpleNetwork(topco)
-#d3 <- networkD3::igraph_to_networkD3(cograph)
-#d3$nodes$group <- 1L
-#networkD3::forceNetwork(Links = d3$links, Nodes = d3$nodes, NodeID = "name", Group = "group")
-
 ## ggraph
 ggraph::ggraph(cograph, "igraph", algorithm = "nicely") + 
   ggraph::geom_edge_link(aes(edge_width = log(N)), colour = "gray") + 
   ggraph::geom_node_text(aes(label = name), fontface = 1, size = 2) + 
   theme_void()
+```
+
+Another, more interactive way of doing this might be:
+
+```{r eval=FALSE}
+networkD3::simpleNetwork(topco)
+d3 <- networkD3::igraph_to_networkD3(cograph)
+d3$nodes$group <- 1L
+networkD3::forceNetwork(Links = d3$links, Nodes = d3$nodes, NodeID = "name", Group = "group")
 ```
 
 Betweenness centrality of top 25 authors:
@@ -146,7 +178,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) +
 
 Years of publication (post-1950):
 
-```{r year}
+```{r year, fig.height=4}
 ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1950, ], aes(x = YEAR)) + 
   geom_bar() +
   xlab("Publication Year") + 
@@ -157,11 +189,11 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1950, ], aes(x = YEAR)) +
 
 Proportion missing data, by field, for articles:
 
-```{r missingness_articles}
+```{r missingness_articles, fig.height=3}
 articles <- dat[dat$CATEGORY == "ARTICLE", c("AUTHOR", "TITLE", "JOURNAL", "YEAR", "VOLUME", "NUMBER", "PAGES", "ABSTRACT", "DOI")]
 articles <- cbind.data.frame(FIELD = names(articles), MISSINGNESS = unlist(lapply(articles, function(x) sum(is.na(x) == TRUE)/length(x))))
 ggplot(articles, aes(x = FIELD, y = MISSINGNESS)) +
-  geom_bar(stat = "identity") + 
+  geom_bar(stat = "identity", fill = "darkgray") + 
   ylab("Proportion Missing") + 
   ylim(c(0,1)) +
   xlab("") + 
@@ -170,11 +202,11 @@ ggplot(articles, aes(x = FIELD, y = MISSINGNESS)) +
 
 Proportion missing data, by field, for books:
 
-```{r missingness_books}
+```{r missingness_books, fig.height=3}
 books <- dat[dat$CATEGORY == "BOOK", c("AUTHOR", "EDITOR", "TITLE", "PUBLISHER", "YEAR", "ADDRESS", "ISBN")]
 books <- cbind.data.frame(FIELD = names(books), MISSINGNESS = unlist(lapply(books, function(x) sum(is.na(x) == TRUE)/length(x))))
 ggplot(books, aes(x = FIELD, y = MISSINGNESS)) +
-  geom_bar(stat = "identity") + 
+  geom_bar(stat = "identity", fill = "darkgray") + 
   ylab("Proportion Missing") + 
   ylim(c(0,1)) +
   xlab("") + 
