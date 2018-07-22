@@ -82,19 +82,6 @@ ggplot(toppublishers, aes(x = PUBLISHER, y = CATEGORY)) +
 
 ## Authors
 
-Most common 50 authors:
-
-```{r authors, fig.height = 8}
-aut <- unlist(dat$AUTHOR)
-topaut <- as.data.frame(head(sort(table(aut), decreasing = TRUE), 100))
-topaut$aut <- factor(topaut$aut, levels = rev(topaut$aut))
-ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + 
-  geom_bar(stat = "identity") + 
-  ylab("Count") + 
-  xlab("Author Name") + 
-  coord_flip()
-```
-
 Number of coauthors per publication:
 
 ```{r nauthors}
@@ -106,11 +93,22 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) +
   ylab("Coauthors per Publication")
 ```
 
+Most common 50 authors:
 
+```{r authors, fig.height = 8}
+aut <- unlist(dat$AUTHOR)
+topaut <- as.data.frame(head(sort(table(aut), decreasing = TRUE), 200))
+topaut$aut <- factor(topaut$aut, levels = rev(topaut$aut))
+ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + 
+  geom_bar(stat = "identity") + 
+  ylab("Count") + 
+  xlab("Author Name") + 
+  coord_flip()
+```
 
 ## Coauthorship
 
-Coauthorship network among most common 100 authors:
+Coauthorship network among most common 200 authors:
 
 ```{r authornetwork, fig.height = 8}
 # get all coauthor pairs
@@ -127,7 +125,7 @@ ggraph::ggraph(cograph, "igraph", algorithm = "nicely") +
   theme_void()
 ```
 
-Betweenness centrality of top 30 authors:
+Betweenness centrality of top 25 authors:
 
 ```{r between}
 between <- igraph::betweenness(cograph)

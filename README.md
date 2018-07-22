@@ -2,7 +2,7 @@ License: Public Domain (CC-0)
 
 This is the bibtex (.bib) file containing all of my bibliographic references. Figured I'd share it publicly.
 
-This README was last updated on 2018-07-10.
+This README was last updated on 2018-07-22.
 
 ``` r
 library("ggplot2")
@@ -24,7 +24,7 @@ dat <- suppressWarnings(bib2df::bib2df("references.bib"))
 suppressWarnings(dat[["YEAR"]] <- as.numeric(dat[["YEAR"]]))
 ```
 
-The database contains 4198 references. What follows are some basic statistics on its contents.
+The database contains 4211 references. What follows are some basic statistics on its contents.
 
 Citation Types
 --------------
@@ -40,7 +40,7 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/Eu4LX01.png)
+![](https://i.imgur.com/3xO54VT.png)
 
 Journals
 --------
@@ -59,7 +59,7 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/w7zR1Um.png)
+![](https://i.imgur.com/H1iSUKo.png)
 
 Book Publishers
 ---------------
@@ -77,25 +77,10 @@ ggplot(toppublishers, aes(x = PUBLISHER, y = CATEGORY)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/URLM7R5.png)
+![](https://i.imgur.com/vzatjrw.png)
 
 Authors
 -------
-
-Most common 50 authors:
-
-``` r
-aut <- unlist(dat$AUTHOR)
-topaut <- as.data.frame(head(sort(table(aut), decreasing = TRUE), 100))
-topaut$aut <- factor(topaut$aut, levels = rev(topaut$aut))
-ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + 
-  geom_bar(stat = "identity") + 
-  ylab("Count") + 
-  xlab("Author Name") + 
-  coord_flip()
-```
-
-![](https://i.imgur.com/SgSVsb6.png)
 
 Number of coauthors per publication:
 
@@ -108,12 +93,27 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) +
   ylab("Coauthors per Publication")
 ```
 
-![](https://i.imgur.com/TIMoM2F.png)
+![](https://i.imgur.com/95eUJ6S.png)
+
+Most common 50 authors:
+
+``` r
+aut <- unlist(dat$AUTHOR)
+topaut <- as.data.frame(head(sort(table(aut), decreasing = TRUE), 200))
+topaut$aut <- factor(topaut$aut, levels = rev(topaut$aut))
+ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + 
+  geom_bar(stat = "identity") + 
+  ylab("Count") + 
+  xlab("Author Name") + 
+  coord_flip()
+```
+
+![](https://i.imgur.com/yvLd5Pc.png)
 
 Coauthorship
 ------------
 
-Coauthorship network among most common 100 authors:
+Coauthorship network among most common 200 authors:
 
 ``` r
 # get all coauthor pairs
@@ -130,9 +130,9 @@ ggraph::ggraph(cograph, "igraph", algorithm = "nicely") +
   theme_void()
 ```
 
-![](https://i.imgur.com/EdJ1mJc.png)
+![](https://i.imgur.com/Meeap3r.png)
 
-Betweenness centrality of top 30 authors:
+Betweenness centrality of top 25 authors:
 
 ``` r
 between <- igraph::betweenness(cograph)
@@ -145,7 +145,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/rImEawI.png)
+![](https://i.imgur.com/A9In8Ct.png)
 
 Publication Years
 -----------------
@@ -159,7 +159,7 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1950, ], aes(x = YEAR)) +
   ylab("Count")
 ```
 
-![](https://i.imgur.com/0jsP6rV.png)
+![](https://i.imgur.com/pnxm5HT.png)
 
 Data missingness
 ----------------
@@ -177,7 +177,7 @@ ggplot(articles, aes(x = FIELD, y = MISSINGNESS)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/jhbRozp.png)
+![](https://i.imgur.com/EHO9Gw3.png)
 
 Proportion missing data, by field, for books:
 
@@ -192,4 +192,4 @@ ggplot(books, aes(x = FIELD, y = MISSINGNESS)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/BBJ8eLa.png)
+![](https://i.imgur.com/jUZ1Nw0.png)
