@@ -9,7 +9,7 @@ output:
 ```{r setup, results="hide"}
 # knitr
 library("knitr")
-opts_chunk$set(fig.width=8, fig.height=5)
+opts_chunk$set(fig.width=8, fig.height=5, cache=TRUE)
 
 # ggplot
 library("ggplot2")
@@ -43,7 +43,7 @@ The database contains `r nrow(dat)` references. What follows are some basic stat
 
 Reference types in the database:
 
-```{r bibtype}
+```{r bibtype, dependson=c("data")}
 dat$CATEGORY <- factor(dat$CATEGORY, levels = names(sort(table(dat$CATEGORY))))
 ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) + 
   geom_bar() + 
@@ -56,7 +56,7 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) +
 
 Most common 50 journals:
 
-```{r journal, fig.height = 8}
+```{r journal, dependson=c("data"), fig.height = 8}
 dat$JOURNAL[is.na(dat$JOURNAL)] <- dat$JOURNALTITLE[is.na(dat$JOURNAL)]
 topjournals <- aggregate(CATEGORY ~ JOURNAL, data = dat, FUN = length)
 topjournals <- head(topjournals[order(topjournals$CATEGORY, decreasing = TRUE), ], 50)
@@ -72,7 +72,7 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) +
 
 Most common 25 journals:
 
-```{r publisher, fig.height = 6}
+```{r publisher, dependson=c("data"), fig.height = 6}
 toppublishers <- aggregate(CATEGORY ~ PUBLISHER, data = dat[dat$CATEGORY == "BOOK",], FUN = length)
 toppublishers <- head(toppublishers[order(toppublishers$CATEGORY, decreasing = TRUE), ], 25)
 toppublishers$PUBLISHER <- factor(toppublishers$PUBLISHER, levels = rev(toppublishers$PUBLISHER))
@@ -88,7 +88,7 @@ ggplot(toppublishers, aes(x = PUBLISHER, y = CATEGORY)) +
 
 Number of coauthors per publication (excluding some recent extreme outliers):
 
-```{r nauthors}
+```{r nauthors, dependson=c("data")}
 dat$nauthors <- lengths(dat$AUTHOR)
 ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900 & dat$nauthors < 40, ], aes(x = YEAR, y = nauthors)) + 
   geom_point(alpha=0.1, fill="black", colour="black") + 
@@ -99,7 +99,7 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900 & dat$nauthors < 40, ], aes(x = YE
 
 Most common 50 authors:
 
-```{r authors, fig.height = 8}
+```{r authors, dependson=c("data"), fig.height = 8}
 aut <- unlist(dat$AUTHOR)
 topaut <- as.data.frame(head(sort(table(aut), decreasing = TRUE), 150))
 topaut$aut <- factor(topaut$aut, levels = rev(topaut$aut))
@@ -110,16 +110,19 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) +
   coord_flip()
 ```
 
-Gender of authors:
+## Gender of authors
 
-```{r authorgender, fig.height=2}
-author_vec <- unique(as.character(unlist(dat$AUTHOR)))
-first_names <- regmatches(
-  author_vec,
-  regexec("(?<=, )[A-Za-z]+(?=[. ]{1})", author_vec, perl = TRUE)
-)
-g <- gender::gender(unlist(first_names))[, "gender", drop = FALSE]
-ggplot(g, aes(x = "", fill = gender)) +
+The overall breakdown of author genders (counting each author only once) is as follows:
+
+```{r authorgender, dependson=c("data"), fig.height=2}
+pull_first_names <- function(x) {
+    x <- unlist(regmatches(as.character(x), regexec("(?<=, )[A-Za-z]+(?=([., ]{1}|$))", as.character(x), perl = TRUE)))
+    x[x != ""]
+}
+first_names <- pull_first_names(unique(as.character(unlist(dat$AUTHOR))))
+author_genders <- gender::gender(unlist(first_names))
+
+ggplot(author_genders[, "gender", drop = FALSE], aes(x = "", fill = gender)) +
   geom_bar(aes(y = (..count..)/sum(..count..)), width = 1, position = "dodge") + 
   scale_fill_manual(limits = c("male", "female"), values = c("gray", "black")) +
   scale_y_continuous(breaks = seq(0,1,by=0.1), labels = scales::percent) +
@@ -129,13 +132,39 @@ ggplot(g, aes(x = "", fill = gender)) +
   theme(legend.position = "bottom")
 ```
 
+```{r teamgender, dependson=c("data", "authorgender"), fig.height=2}
+team_genders <- unlist(lapply(dat$AUTHOR, function(x) {
+    firsts <- pull_first_names(as.character(x))
+    u <- author_genders$gender[match(firsts[firsts != ""], author_genders$name)]
+    if (!length(u) || is.na(u)) {
+        "Ambiguous"
+    } else if (length(u) == 1 && u == "male") {
+        "Male Solo"
+    } else if (length(u) == 1 && u == "female") {
+        "Female Solo"
+    } else if (all(u %in% "male")) {
+        "Male Team"
+    } else if (all(u %in% "female")) {
+        "Female Team"
+    } else {
+        "Male-Female Team"
+    }
+}))
+team_genders_df <- table(factor(team_genders, rev(c("Male-Female Team", "Male Solo", "Female Solo", "Male Team", "Female Team", "Ambiguous"))))
+ggplot(data.frame(team_genders_df), aes(x = Var1, y = Freq)) +
+  geom_bar(width = 1, position = "dodge", stat = "identity") + 
+  coord_flip() +
+  xlab("") +
+  ylab("")
+```
+
 Caveat: The above is based upon [the gender package](https://cran.r-project.org/package=gender), which classifies first names based upon historical data. This is not necessarily accurate and is restricted to a binary classification. It also uses all historical data provided in the package and is based only on United States data, making it possibly inaccurate for any given individual in the dataset.
 
 ## Coauthorship
 
 Coauthorship network among most common 150 authors:
 
-```{r authornetwork, fig.height=10}
+```{r authornetwork, dependson=c("data"), fig.height=10}
 # get all coauthor pairs
 colist <- lapply(dat$AUTHOR, function(x) if (length(x) >= 2) combn(x, m = 2) else NA_character_)
 # convert networks of top coauthors to igraph object
@@ -154,7 +183,7 @@ ggraph::ggraph(cograph, "igraph", algorithm = "nicely") +
 
 Another, more interactive way of doing this might be:
 
-```{r eval=FALSE}
+```{r eval=FALSE, dependson=c("data", "authornetwork")}
 networkD3::simpleNetwork(topco)
 d3 <- networkD3::igraph_to_networkD3(cograph)
 d3$nodes$group <- 1L
@@ -163,7 +192,7 @@ networkD3::forceNetwork(Links = d3$links, Nodes = d3$nodes, NodeID = "name", Gro
 
 Betweenness centrality of top 25 authors:
 
-```{r between}
+```{r between, dependson=c("data", "authornetwork")}
 between <- igraph::betweenness(cograph)
 topcoaut <- na.omit(data.frame(betweenness = head(sort(between, decreasing = TRUE), 30)))
 topcoaut$aut <- factor(rownames(topcoaut), levels = rev(rownames(topcoaut)))
@@ -178,7 +207,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) +
 
 Years of publication (post-1950):
 
-```{r year, fig.height=4}
+```{r year, dependson=c("data"), fig.height=4}
 ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1950, ], aes(x = YEAR)) + 
   geom_bar() +
   xlab("Publication Year") + 
@@ -189,7 +218,7 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1950, ], aes(x = YEAR)) +
 
 Proportion missing data, by field, for articles:
 
-```{r missingness_articles, fig.height=3}
+```{r missingness_articles, dependson=c("data"), fig.height=3}
 articles <- dat[dat$CATEGORY == "ARTICLE", c("AUTHOR", "TITLE", "JOURNAL", "YEAR", "VOLUME", "NUMBER", "PAGES", "ABSTRACT", "DOI")]
 articles <- cbind.data.frame(FIELD = names(articles), MISSINGNESS = unlist(lapply(articles, function(x) sum(is.na(x) == TRUE)/length(x))))
 ggplot(articles, aes(x = FIELD, y = MISSINGNESS)) +
@@ -202,7 +231,7 @@ ggplot(articles, aes(x = FIELD, y = MISSINGNESS)) +
 
 Proportion missing data, by field, for books:
 
-```{r missingness_books, fig.height=3}
+```{r missingness_books, dependson=c("data"), fig.height=3}
 books <- dat[dat$CATEGORY == "BOOK", c("AUTHOR", "EDITOR", "TITLE", "PUBLISHER", "YEAR", "ADDRESS", "ISBN")]
 books <- cbind.data.frame(FIELD = names(books), MISSINGNESS = unlist(lapply(books, function(x) sum(is.na(x) == TRUE)/length(x))))
 ggplot(books, aes(x = FIELD, y = MISSINGNESS)) +
@@ -211,11 +240,4 @@ ggplot(books, aes(x = FIELD, y = MISSINGNESS)) +
   ylim(c(0,1)) +
   xlab("") + 
   coord_flip()
-```
-
-
-
-```{r wrapup, echo = FALSE, results="hide"}
-unlink("cache", recursive = TRUE)
-unlink("figure", recursive = TRUE)
 ```

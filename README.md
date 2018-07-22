@@ -1,7 +1,7 @@
 ``` r
 # knitr
 library("knitr")
-opts_chunk$set(fig.width=8, fig.height=5)
+opts_chunk$set(fig.width=8, fig.height=5, cache=TRUE)
 
 # ggplot
 library("ggplot2")
@@ -120,16 +120,20 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) +
 
 ![](README_files/figure-markdown_github/authors-1.png)
 
-Gender of authors:
+Gender of authors
+-----------------
+
+The overall breakdown of author genders (counting each author only once) is as follows:
 
 ``` r
-author_vec <- unique(as.character(unlist(dat$AUTHOR)))
-first_names <- regmatches(
-  author_vec,
-  regexec("(?<=, )[A-Za-z]+(?=[. ]{1})", author_vec, perl = TRUE)
-)
-g <- gender::gender(unlist(first_names))[, "gender", drop = FALSE]
-ggplot(g, aes(x = "", fill = gender)) +
+pull_first_names <- function(x) {
+    x <- unlist(regmatches(as.character(x), regexec("(?<=, )[A-Za-z]+(?=([., ]{1}|$))", as.character(x), perl = TRUE)))
+    x[x != ""]
+}
+first_names <- pull_first_names(unique(as.character(unlist(dat$AUTHOR))))
+author_genders <- gender::gender(unlist(first_names))
+
+ggplot(author_genders[, "gender", drop = FALSE], aes(x = "", fill = gender)) +
   geom_bar(aes(y = (..count..)/sum(..count..)), width = 1, position = "dodge") + 
   scale_fill_manual(limits = c("male", "female"), values = c("gray", "black")) +
   scale_y_continuous(breaks = seq(0,1,by=0.1), labels = scales::percent) +
@@ -140,6 +144,34 @@ ggplot(g, aes(x = "", fill = gender)) +
 ```
 
 ![](README_files/figure-markdown_github/authorgender-1.png)
+
+``` r
+team_genders <- unlist(lapply(dat$AUTHOR, function(x) {
+    firsts <- pull_first_names(as.character(x))
+    u <- author_genders$gender[match(firsts[firsts != ""], author_genders$name)]
+    if (!length(u) || is.na(u)) {
+        "Ambiguous"
+    } else if (length(u) == 1 && u == "male") {
+        "Male Solo"
+    } else if (length(u) == 1 && u == "female") {
+        "Female Solo"
+    } else if (all(u %in% "male")) {
+        "Male Team"
+    } else if (all(u %in% "female")) {
+        "Female Team"
+    } else {
+        "Male-Female Team"
+    }
+}))
+team_genders_df <- table(factor(team_genders, rev(c("Male-Female Team", "Male Solo", "Female Solo", "Male Team", "Female Team", "Ambiguous"))))
+ggplot(data.frame(team_genders_df), aes(x = Var1, y = Freq)) +
+  geom_bar(width = 1, position = "dodge", stat = "identity") + 
+  coord_flip() +
+  xlab("") +
+  ylab("")
+```
+
+![](README_files/figure-markdown_github/teamgender-1.png)
 
 Caveat: The above is based upon [the gender package](https://cran.r-project.org/package=gender), which classifies first names based upon historical data. This is not necessarily accurate and is restricted to a binary classification. It also uses all historical data provided in the package and is based only on United States data, making it possibly inaccurate for any given individual in the dataset.
 
