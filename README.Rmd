@@ -6,9 +6,14 @@ output:
     variant: markdown_github
 ---
 
-```{r setup, echo = FALSE, results="hide"}
+```{r setup, results="hide"}
 library("knitr")
-opts_knit$set(upload.fun = imgur_upload, base.url = NULL)
+library("ggplot2")
+requireNamespace("bib2df", quietly = TRUE)
+requireNamespace("igraph", quietly = TRUE)
+requireNamespace("gender", quietly = TRUE)
+requireNamespace("ggraph", quietly = TRUE)
+theme_set(theme_minimal())
 opts_chunk$set(fig.width=8, fig.height=5)
 ````
 
@@ -17,15 +22,6 @@ License: Public Domain (CC-0)
 This is the bibtex (.bib) file containing all of my bibliographic references. Figured I'd share it publicly.
 
 This README was last updated on `r Sys.Date()`.
-
-```{r packages}
-library("ggplot2")
-requireNamespace("bib2df", quietly = TRUE)
-requireNamespace("igraph", quietly = TRUE)
-requireNamespace("gender", quietly = TRUE)
-requireNamespace("ggraph", quietly = TRUE)
-theme_set(theme_minimal())
-```
 
 ```{r data}
 dat <- suppressWarnings(bib2df::bib2df("references.bib"))
@@ -97,7 +93,7 @@ Most common 50 authors:
 
 ```{r authors, fig.height = 8}
 aut <- unlist(dat$AUTHOR)
-topaut <- as.data.frame(head(sort(table(aut), decreasing = TRUE), 200))
+topaut <- as.data.frame(head(sort(table(aut), decreasing = TRUE), 150))
 topaut$aut <- factor(topaut$aut, levels = rev(topaut$aut))
 ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + 
   geom_bar(stat = "identity") + 
@@ -108,9 +104,9 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) +
 
 ## Coauthorship
 
-Coauthorship network among most common 200 authors:
+Coauthorship network among most common 150 authors:
 
-```{r authornetwork, fig.height = 8}
+```{r authornetwork, fig.height=12}
 # get all coauthor pairs
 colist <- lapply(dat$AUTHOR, function(x) if (length(x) >= 2) combn(x, m = 2) else NA_character_)
 # convert networks of top coauthors to igraph object
@@ -119,6 +115,14 @@ codat$N <- 1L
 # make coauthor graph from top coauthors
 topco <- aggregate(N ~ X1 + X2, data = codat[codat$X1 %in% topaut$aut & codat$X2 %in% topaut$aut, ], FUN = sum)
 cograph <- igraph::graph_from_data_frame(topco, directed = FALSE)
+
+## d3
+#networkD3::simpleNetwork(topco)
+#d3 <- networkD3::igraph_to_networkD3(cograph)
+#d3$nodes$group <- 1L
+#networkD3::forceNetwork(Links = d3$links, Nodes = d3$nodes, NodeID = "name", Group = "group")
+
+## ggraph
 ggraph::ggraph(cograph, "igraph", algorithm = "nicely") + 
   ggraph::geom_edge_link(aes(edge_width = log(N)), colour = "gray") + 
   ggraph::geom_node_text(aes(label = name), fontface = 1, size = 2) + 

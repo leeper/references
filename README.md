@@ -1,17 +1,19 @@
-License: Public Domain (CC-0)
-
-This is the bibtex (.bib) file containing all of my bibliographic references. Figured I'd share it publicly.
-
-This README was last updated on 2018-07-22.
-
 ``` r
+library("knitr")
 library("ggplot2")
 requireNamespace("bib2df", quietly = TRUE)
 requireNamespace("igraph", quietly = TRUE)
 requireNamespace("gender", quietly = TRUE)
 requireNamespace("ggraph", quietly = TRUE)
 theme_set(theme_minimal())
+opts_chunk$set(fig.width=8, fig.height=5)
 ```
+
+License: Public Domain (CC-0)
+
+This is the bibtex (.bib) file containing all of my bibliographic references. Figured I'd share it publicly.
+
+This README was last updated on 2018-07-22.
 
 ``` r
 dat <- suppressWarnings(bib2df::bib2df("references.bib"))
@@ -40,7 +42,7 @@ ggplot(dat[!is.na(dat$CATEGORY),], aes(x = CATEGORY)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/3xO54VT.png)
+![](README_files/figure-markdown_github/bibtype-1.png)
 
 Journals
 --------
@@ -59,7 +61,7 @@ ggplot(topjournals, aes(x = JOURNAL, y = CATEGORY)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/H1iSUKo.png)
+![](README_files/figure-markdown_github/journal-1.png)
 
 Book Publishers
 ---------------
@@ -77,7 +79,7 @@ ggplot(toppublishers, aes(x = PUBLISHER, y = CATEGORY)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/vzatjrw.png)
+![](README_files/figure-markdown_github/publisher-1.png)
 
 Authors
 -------
@@ -93,13 +95,13 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1900, ], aes(x = YEAR, y = nauthors)) +
   ylab("Coauthors per Publication")
 ```
 
-![](https://i.imgur.com/95eUJ6S.png)
+![](README_files/figure-markdown_github/nauthors-1.png)
 
 Most common 50 authors:
 
 ``` r
 aut <- unlist(dat$AUTHOR)
-topaut <- as.data.frame(head(sort(table(aut), decreasing = TRUE), 200))
+topaut <- as.data.frame(head(sort(table(aut), decreasing = TRUE), 150))
 topaut$aut <- factor(topaut$aut, levels = rev(topaut$aut))
 ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) + 
   geom_bar(stat = "identity") + 
@@ -108,12 +110,12 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/yvLd5Pc.png)
+![](README_files/figure-markdown_github/authors-1.png)
 
 Coauthorship
 ------------
 
-Coauthorship network among most common 200 authors:
+Coauthorship network among most common 150 authors:
 
 ``` r
 # get all coauthor pairs
@@ -124,13 +126,21 @@ codat$N <- 1L
 # make coauthor graph from top coauthors
 topco <- aggregate(N ~ X1 + X2, data = codat[codat$X1 %in% topaut$aut & codat$X2 %in% topaut$aut, ], FUN = sum)
 cograph <- igraph::graph_from_data_frame(topco, directed = FALSE)
+
+## d3
+#networkD3::simpleNetwork(topco)
+#d3 <- networkD3::igraph_to_networkD3(cograph)
+#d3$nodes$group <- 1L
+#networkD3::forceNetwork(Links = d3$links, Nodes = d3$nodes, NodeID = "name", Group = "group")
+
+## ggraph
 ggraph::ggraph(cograph, "igraph", algorithm = "nicely") + 
   ggraph::geom_edge_link(aes(edge_width = log(N)), colour = "gray") + 
   ggraph::geom_node_text(aes(label = name), fontface = 1, size = 2) + 
   theme_void()
 ```
 
-![](https://i.imgur.com/Meeap3r.png)
+![](README_files/figure-markdown_github/authornetwork-1.png)
 
 Betweenness centrality of top 25 authors:
 
@@ -145,7 +155,7 @@ ggplot(topcoaut, aes(x = aut, y = betweenness)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/A9In8Ct.png)
+![](README_files/figure-markdown_github/between-1.png)
 
 Publication Years
 -----------------
@@ -159,7 +169,7 @@ ggplot(dat[!is.na(dat$YEAR) & dat$YEAR > 1950, ], aes(x = YEAR)) +
   ylab("Count")
 ```
 
-![](https://i.imgur.com/pnxm5HT.png)
+![](README_files/figure-markdown_github/year-1.png)
 
 Data missingness
 ----------------
@@ -177,7 +187,7 @@ ggplot(articles, aes(x = FIELD, y = MISSINGNESS)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/EHO9Gw3.png)
+![](README_files/figure-markdown_github/missingness_articles-1.png)
 
 Proportion missing data, by field, for books:
 
@@ -192,4 +202,4 @@ ggplot(books, aes(x = FIELD, y = MISSINGNESS)) +
   coord_flip()
 ```
 
-![](https://i.imgur.com/jUZ1Nw0.png)
+![](README_files/figure-markdown_github/missingness_books-1.png)
