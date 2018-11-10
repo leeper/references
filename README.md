@@ -21,7 +21,7 @@ License: Public Domain (CC-0)
 
 This is the bibtex (.bib) file containing all of my bibliographic references. Figured I'd share it publicly.
 
-This README was last updated on 2018-08-11.
+This README was last updated on 2018-11-10.
 
 ``` r
 dat <- suppressWarnings(bib2df::bib2df("references.bib"))
