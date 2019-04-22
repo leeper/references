@@ -34,7 +34,7 @@ dat <- suppressWarnings(bib2df::bib2df("references.bib"))
 suppressWarnings(dat[["YEAR"]] <- as.numeric(dat[["YEAR"]]))
 ```
 
-The database contains 4211 references. What follows are some basic statistics on its contents.
+The database contains 4209 references. What follows are some basic statistics on its contents.
 
 Citation Types
 --------------
