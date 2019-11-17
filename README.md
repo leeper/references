@@ -19,9 +19,10 @@ requireNamespace("ggraph", quietly = TRUE)
 
 License: Public Domain (CC-0)
 
-This is the bibtex (.bib) file containing all of my bibliographic references. Figured I'd share it publicly.
+This is the bibtex (.bib) file containing all of my bibliographic
+references. Figured I’d share it publicly.
 
-This README was last updated on 2019-04-24.
+This README was last updated on 2019-11-17.
 
 ``` r
 dat <- suppressWarnings(bib2df::bib2df("references.bib"))
@@ -34,7 +35,8 @@ dat <- suppressWarnings(bib2df::bib2df("references.bib"))
 suppressWarnings(dat[["YEAR"]] <- as.numeric(dat[["YEAR"]]))
 ```
 
-The database contains 4209 references. What follows are some basic statistics on its contents.
+The database contains 4209 references. What follows are some basic
+statistics on its contents.
 
 Citation Types
 --------------
@@ -92,7 +94,8 @@ ggplot(toppublishers, aes(x = PUBLISHER, y = CATEGORY)) +
 Authors
 -------
 
-Number of coauthors per publication (excluding some recent extreme outliers):
+Number of coauthors per publication (excluding some recent extreme
+outliers):
 
 ``` r
 dat$nauthors <- lengths(dat$AUTHOR)
@@ -123,7 +126,8 @@ ggplot(topaut[1:50, ], aes(x = aut, y = Freq)) +
 Gender of authors
 -----------------
 
-The overall breakdown of author genders (counting each author only once) is as follows:
+The overall breakdown of author genders (counting each author only once)
+is as follows:
 
 ``` r
 pull_first_names <- function(x) {
@@ -173,7 +177,13 @@ ggplot(data.frame(team_genders_df), aes(x = Var1, y = Freq)) +
 
 ![](README_files/figure-markdown_github/teamgender-1.png)
 
-Caveat: The above is based upon [the gender package](https://cran.r-project.org/package=gender), which classifies first names based upon historical data. This is not necessarily accurate and is restricted to a binary classification. It also uses all historical data provided in the package and is based only on United States data, making it possibly inaccurate for any given individual in the dataset.
+Caveat: The above is based upon [the gender
+package](https://cran.r-project.org/package=gender), which classifies
+first names based upon historical data. This is not necessarily accurate
+and is restricted to a binary classification. It also uses all
+historical data provided in the package and is based only on United
+States data, making it possibly inaccurate for any given individual in
+the dataset.
 
 Coauthorship
 ------------
